@@ -1,0 +1,661 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Firebase NoSQL (Firestore) — Guía de Trabajo y Practicario</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --card:#111a33;
+      --text:#eaf0ff;
+      --muted:#b9c6ff;
+      --line:rgba(255,255,255,.12);
+      --accent:#7aa2ff;
+      --accent2:#7dffcf;
+      --warn:#ffd27a;
+      --ok:#8bff8b;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --max: 980px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.25), transparent 60%),
+                  radial-gradient(1000px 600px at 100% 0%, rgba(125,255,207,.15), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    a{color:var(--accent); text-decoration:none}
+    a:hover{text-decoration:underline}
+    header{
+      position:sticky; top:0; z-index:50;
+      background: rgba(11,16,32,.75);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:var(--max); margin:0 auto; padding:16px}
+    .top{
+      display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .title h1{margin:0; font-size:18px; letter-spacing:.2px}
+    .title .sub{opacity:.85; font-size:13px; color:var(--muted)}
+    nav{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    .chip{
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      color:var(--text);
+      background: rgba(255,255,255,.05);
+      font-size:13px;
+      cursor:pointer;
+      user-select:none;
+    }
+    .chip:hover{border-color:rgba(122,162,255,.55)}
+    .tools{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      margin-top:10px;
+    }
+    .search{
+      flex:1;
+      min-width:240px;
+      display:flex; align-items:center; gap:10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 12px;
+      background: rgba(255,255,255,.05);
+    }
+    .search input{
+      width:100%;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:14px;
+    }
+    .btn{
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:13px;
+      cursor:pointer;
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+    }
+    .btn:hover{border-color:rgba(125,255,207,.55)}
+    main{padding:18px 0 40px}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:14px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 10px;
+      border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    }
+    .card .hd h2{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.2px;
+    }
+    .tag{
+      font-size:12px;
+      padding:6px 8px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background: rgba(0,0,0,.12);
+      white-space:nowrap;
+    }
+    .card .bd{padding:14px 16px}
+    .note{
+      border-left: 3px solid var(--accent2);
+      background: rgba(125,255,207,.08);
+      padding:10px 12px;
+      border-radius:12px;
+      margin:10px 0;
+      color: var(--text);
+    }
+    .warn{
+      border-left: 3px solid var(--warn);
+      background: rgba(255,210,122,.10);
+    }
+    .ok{
+      border-left: 3px solid var(--ok);
+      background: rgba(139,255,139,.08);
+    }
+    h3{margin:14px 0 8px; font-size:14px}
+    ul{margin:8px 0 10px 18px}
+    li{margin:6px 0}
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--line);
+      margin:10px 0;
+    }
+    th,td{
+      text-align:left;
+      padding:10px 10px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:13px;
+    }
+    th{
+      background: rgba(122,162,255,.10);
+      color: var(--text);
+      font-weight:600;
+    }
+    tr:last-child td{border-bottom:0}
+    .accordion{
+      border:1px solid var(--line);
+      border-radius:14px;
+      overflow:hidden;
+      margin:10px 0;
+      background: rgba(0,0,0,.10);
+    }
+    details{padding:0}
+    summary{
+      list-style:none;
+      cursor:pointer;
+      padding:12px 12px;
+      font-weight:600;
+      font-size:13px;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    summary::-webkit-details-marker{display:none}
+    .chev{
+      width:10px; height:10px;
+      border-right:2px solid var(--muted);
+      border-bottom:2px solid var(--muted);
+      transform: rotate(-45deg);
+      transition: transform .2s ease;
+      margin-left:10px;
+      flex:0 0 auto;
+    }
+    details[open] .chev{transform: rotate(45deg)}
+    .content{
+      padding:0 12px 12px;
+      border-top:1px solid var(--line);
+      color: var(--text);
+      font-size:13px;
+    }
+    .muted{color:var(--muted)}
+    .pill{
+      display:inline-block;
+      padding:6px 9px;
+      border-radius:999px;
+      background: rgba(122,162,255,.12);
+      border:1px solid rgba(122,162,255,.30);
+      font-size:12px;
+      margin:4px 6px 0 0;
+    }
+
+    footer{
+      opacity:.9;
+      color:var(--muted);
+      font-size:12px;
+      padding:18px 0 30px;
+      text-align:center;
+    }
+
+    /* Impresión */
+    @media print{
+      header{position:static; background:#fff; color:#000}
+      body{background:#fff; color:#000}
+      .card{box-shadow:none; background:#fff}
+      .chip,.btn,.search{display:none !important}
+      .tag{border:1px solid #ccc; color:#333}
+      a{color:#000; text-decoration:underline}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="top">
+        <div class="title">
+          <h1>Firebase NoSQL (Firestore) — Guía de Trabajo y Practicario</h1>
+          <div class="sub">Curso intersemestral • Consulta para alumnos • Sin grupo específico</div>
+        </div>
+        <nav>
+          <a class="chip" href="#guia">Guía</a>
+          <a class="chip" href="#practicario">Practicario</a>
+          <a class="chip" href="#evidencias">Evidencias</a>
+        </nav>
+      </div>
+
+      <div class="tools">
+        <div class="search" title="Busca en el contenido (palabras clave)">
+          <span class="muted">🔎</span>
+          <input id="searchInput" type="search" placeholder="Buscar… (ej. colección, documento, entregado, booleano)" />
+        </div>
+        <button class="btn" id="btnExpand">Expandir todo</button>
+        <button class="btn" id="btnCollapse">Contraer todo</button>
+        <button class="btn" onclick="window.print()">Imprimir / Guardar PDF</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid">
+
+      <!-- TARJETA: CONTEXTO RÁPIDO -->
+      <article class="card" id="inicio">
+        <div class="hd">
+          <h2>Antes de empezar</h2>
+          <div class="tag">Conceptos base</div>
+        </div>
+        <div class="bd">
+          <div class="note">
+            <b>Idea clave:</b> Firestore es una base de datos <b>NoSQL</b>. No usa tablas. Organiza la información en:
+            <span class="pill">Colecciones</span>
+            <span class="pill">Documentos</span>
+            <span class="pill">Campos</span>
+          </div>
+          <div class="warn note">
+            <b>Importante:</b> En esta primera etapa <b>NO programaremos</b>. Primero crearás la estructura y los datos desde la consola de Firebase.
+          </div>
+          <p class="muted">
+            Si algo no coincide con tu pantalla, pide apoyo al docente (puede variar por configuración del proyecto).
+          </p>
+        </div>
+      </article>
+
+      <!-- GUÍA DE TRABAJO -->
+      <article class="card" id="guia">
+        <div class="hd">
+          <h2>Guía de Trabajo (Alumno)</h2>
+          <div class="tag">Firestore sin código</div>
+        </div>
+        <div class="bd">
+          <div class="accordion">
+            <details open>
+              <summary>1) Propósito y aprendizajes esperados <span class="chev"></span></summary>
+              <div class="content">
+                <p><b>Propósito:</b> Comprender cómo se almacena la información en una base de datos NoSQL, identificando colección, documento y campos usando Firebase Firestore.</p>
+                <ul>
+                  <li>Reconocer características básicas de NoSQL.</li>
+                  <li>Identificar la estructura: colección → documento → campos.</li>
+                  <li>Registrar información respetando tipos de dato.</li>
+                  <li>Comprender la flexibilidad del modelo NoSQL.</li>
+                </ul>
+                <p><b>Duración sugerida:</b> 90 a 120 minutos.</p>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>2) Recursos y preparación <span class="chev"></span></summary>
+              <div class="content">
+                <ul>
+                  <li>Cuenta de Google</li>
+                  <li>Acceso a un proyecto de Firebase (proporcionado por el docente)</li>
+                  <li>Navegador web</li>
+                  <li>Cuaderno o documento digital para respuestas</li>
+                </ul>
+                <div class="note ok">
+                  <b>Tip:</b> Si trabajas en equipo, cada alumno debe crear <b>su propio documento</b> dentro de la colección.
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>3) Actividad 1 — Exploración de Firestore <span class="chev"></span></summary>
+              <div class="content">
+                <ol>
+                  <li>Entra a Firebase Console.</li>
+                  <li>Abre el proyecto asignado.</li>
+                  <li>Ve a <b>Firestore Database</b>.</li>
+                  <li>Observa: colecciones, documentos y campos.</li>
+                </ol>
+                <h3>Responde</h3>
+                <ul>
+                  <li>¿Ves tablas como en una base relacional?</li>
+                  <li>¿Qué crees que sea una colección?</li>
+                  <li>¿Qué crees que sea un documento?</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>4) Actividad 2 — Crear la colección <span class="chev"></span></summary>
+              <div class="content">
+                <p>Crea una colección con el nombre exacto:</p>
+                <div class="note"><code>bitacora_clase</code></div>
+                <ol>
+                  <li>Da clic en <b>Start collection</b> o <b>Iniciar colección</b>.</li>
+                  <li>Nombre: <b>bitacora_clase</b></li>
+                  <li>Crea un documento con <b>ID automático</b>.</li>
+                </ol>
+                <div class="warn note">
+                  <b>Cuida:</b> el nombre debe ir en minúsculas y con guion bajo, tal como está.
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>5) Actividad 3 — Llenado de datos (tu primer documento) <span class="chev"></span></summary>
+              <div class="content">
+                <p>Dentro del documento, agrega los campos con su tipo:</p>
+
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Campo</th>
+                      <th>Tipo</th>
+                      <th>Qué debes escribir</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><code>nombreAlumno</code></td>
+                      <td>Texto (string)</td>
+                      <td>Tu nombre completo</td>
+                    </tr>
+                    <tr>
+                      <td><code>practica</code></td>
+                      <td>Texto (string)</td>
+                      <td>“Práctica 1 – Firestore” (o el nombre indicado)</td>
+                    </tr>
+                    <tr>
+                      <td><code>fecha</code></td>
+                      <td>Fecha (date / timestamp)</td>
+                      <td>La fecha de hoy</td>
+                    </tr>
+                    <tr>
+                      <td><code>aprendizaje</code></td>
+                      <td>Texto (string)</td>
+                      <td>Qué aprendiste (2 a 4 líneas)</td>
+                    </tr>
+                    <tr>
+                      <td><code>dificultad</code></td>
+                      <td>Texto (string)</td>
+                      <td>Qué se te dificultó (1 a 3 líneas)</td>
+                    </tr>
+                    <tr>
+                      <td><code>entregado</code></td>
+                      <td>Booleano (true/false)</td>
+                      <td>Coloca <b>false</b></td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div class="note ok">
+                  <b>Chequeo rápido:</b> confirma que “entregado” sea booleano y no texto.
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>6) Actividad 4 — Reflexión corta <span class="chev"></span></summary>
+              <div class="content">
+                <ul>
+                  <li>¿Qué diferencia notas entre Firestore y una base relacional?</li>
+                  <li>¿Qué ventaja tiene no exigir una estructura fija?</li>
+                </ul>
+                <div class="note">
+                  <b>Ayuda:</b> piensa en “flexibilidad” y “cambios rápidos en apps”.
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+      </article>
+
+      <!-- PRACTICARIO -->
+      <article class="card" id="practicario">
+        <div class="hd">
+          <h2>Practicario (Alumno)</h2>
+          <div class="tag">Práctica 1</div>
+        </div>
+        <div class="bd">
+          <div class="accordion">
+            <details open>
+              <summary>Objetivo, tiempo e indicaciones <span class="chev"></span></summary>
+              <div class="content">
+                <p><b>Objetivo:</b> Aplicar conceptos NoSQL creando y editando documentos en Firestore (sin código).</p>
+                <p><b>Tiempo estimado:</b> 60 a 90 minutos.</p>
+                <ul>
+                  <li>Trabaja directo en Firestore Database.</li>
+                  <li>No uses código en esta práctica.</li>
+                  <li>Verifica el tipo de dato de cada campo.</li>
+                </ul>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>Ejercicio 1 — Reconocimiento <span class="chev"></span></summary>
+              <div class="content">
+                <p>En Firestore, identifica:</p>
+                <ul>
+                  <li>Una <b>colección</b></li>
+                  <li>Un <b>documento</b></li>
+                  <li>Un <b>campo</b> y su tipo de dato</li>
+                </ul>
+                <p class="muted">Escribe en tu cuaderno: ¿qué función cumple cada uno?</p>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>Ejercicio 2 — Colección y primer documento <span class="chev"></span></summary>
+              <div class="content">
+                <ol>
+                  <li>Crea la colección <code>bitacora_clase</code> (si aún no existe).</li>
+                  <li>Crea un documento con <b>ID automático</b>.</li>
+                  <li>Agrega todos los campos de la tabla de la guía.</li>
+                </ol>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>Ejercicio 3 — Edición (entregado) <span class="chev"></span></summary>
+              <div class="content">
+                <p>Edita tu documento y cambia:</p>
+                <div class="note"><code>entregado</code> → <b>true</b></div>
+                <p class="muted">Responde: ¿tuviste que crear un documento nuevo o solo editar?</p>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>Ejercicio 4 — Flexibilidad NoSQL (campo extra) <span class="chev"></span></summary>
+              <div class="content">
+                <p>Agrega un campo nuevo:</p>
+                <div class="note"><code>tiempoInvertido</code> (número)</div>
+                <p>Coloca un valor en minutos.</p>
+                <div class="warn note">
+                  <b>Ojo:</b> el tipo debe ser <b>número</b>, no texto.
+                </div>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>Ejercicio 5 — Comparación con un segundo documento <span class="chev"></span></summary>
+              <div class="content">
+                <ol>
+                  <li>Crea un <b>segundo documento</b> en la misma colección.</li>
+                  <li>Agrega los mismos campos… <b>pero NO agregues</b> <code>tiempoInvertido</code>.</li>
+                </ol>
+                <p><b>Analiza:</b> ¿Firestore marca error? ¿Qué te dice eso de NoSQL?</p>
+              </div>
+            </details>
+          </div>
+
+          <div class="accordion">
+            <details>
+              <summary>Actividad final — Responde (breve) <span class="chev"></span></summary>
+              <div class="content">
+                <ol>
+                  <li>¿Por qué Firestore no exige una estructura fija?</li>
+                  <li>¿Qué ventaja ofrece para aplicaciones modernas?</li>
+                  <li>Da un ejemplo de app real donde usarías este modelo.</li>
+                </ol>
+              </div>
+            </details>
+          </div>
+        </div>
+      </article>
+
+      <!-- EVIDENCIAS -->
+      <article class="card" id="evidencias">
+        <div class="hd">
+          <h2>Evidencias de entrega</h2>
+          <div class="tag">Checklist</div>
+        </div>
+        <div class="bd">
+          <div class="note ok">
+            Entrega estas evidencias en Classroom o donde indique el docente:
+          </div>
+          <ul>
+            <li>📸 Captura donde se vea la colección <code>bitacora_clase</code>.</li>
+            <li>📸 Captura del documento 1 con todos los campos completos.</li>
+            <li>📸 Captura del documento 2 (sin <code>tiempoInvertido</code>).</li>
+            <li>📝 Respuestas de la reflexión (guía) y actividad final (practicario).</li>
+          </ul>
+          <div class="warn note">
+            <b>Consejo:</b> si tu captura no muestra claramente campos y tipos, repítela (que se vea el panel de campos).
+          </div>
+        </div>
+      </article>
+
+    </section>
+
+    <footer>
+      Material de consulta para alumnos • Firebase Firestore (NoSQL) • Intersemestral
+    </footer>
+  </main>
+
+  <script>
+    // --- Expandir/contraer acordeones ---
+    const allDetails = () => Array.from(document.querySelectorAll("details"));
+    document.getElementById("btnExpand").addEventListener("click", () => {
+      allDetails().forEach(d => d.open = true);
+    });
+    document.getElementById("btnCollapse").addEventListener("click", () => {
+      allDetails().forEach(d => d.open = false);
+      // Mantener abierto el primer bloque de cada sección principal para que no quede "vacío"
+      document.querySelectorAll("#guia details, #practicario details").forEach((d,i)=>{
+        if(i===0) d.open = true;
+      });
+    });
+
+    // --- Búsqueda simple (resalta y filtra tarjetas) ---
+    const input = document.getElementById("searchInput");
+    const cards = Array.from(document.querySelectorAll("article.card"));
+
+    function normalize(s){
+      return (s||"").toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"");
+    }
+
+    input.addEventListener("input", () => {
+      const q = normalize(input.value.trim());
+      if(!q){
+        cards.forEach(c => c.style.display = "");
+        // limpiar marcas
+        document.querySelectorAll("mark").forEach(m=>{
+          const t = document.createTextNode(m.textContent);
+          m.replaceWith(t);
+        });
+        return;
+      }
+
+      // limpiar marcas anteriores
+      document.querySelectorAll("mark").forEach(m=>{
+        const t = document.createTextNode(m.textContent);
+        m.replaceWith(t);
+      });
+
+      cards.forEach(card => {
+        const text = normalize(card.innerText);
+        const hit = text.includes(q);
+        card.style.display = hit ? "" : "none";
+      });
+
+      // resaltar (solo dentro de tarjetas visibles)
+      const visible = cards.filter(c => c.style.display !== "none");
+      visible.forEach(card => {
+        highlight(card, input.value.trim());
+      });
+    });
+
+    function highlight(root, query){
+      if(!query) return;
+      const q = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const re = new RegExp(q, "gi");
+
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node){
+          if(!node.nodeValue) return NodeFilter.FILTER_REJECT;
+          if(node.parentElement && ["SCRIPT","STYLE"].includes(node.parentElement.tagName)) return NodeFilter.FILTER_REJECT;
+          if(node.nodeValue.trim().length === 0) return NodeFilter.FILTER_REJECT;
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      });
+
+      const nodes = [];
+      while(walker.nextNode()) nodes.push(walker.currentNode);
+
+      nodes.forEach(node=>{
+        const val = node.nodeValue;
+        if(!re.test(val)) return;
+        const frag = document.createDocumentFragment();
+        let lastIndex = 0;
+        re.lastIndex = 0;
+        let m;
+        while((m = re.exec(val)) !== null){
+          const start = m.index;
+          const end = start + m[0].length;
+          frag.appendChild(document.createTextNode(val.slice(lastIndex, start)));
+          const mark = document.createElement("mark");
+          mark.textContent = val.slice(start, end);
+          mark.style.background = "rgba(122,162,255,.28)";
+          mark.style.color = "inherit";
+          mark.style.padding = "0 2px";
+          mark.style.borderRadius = "6px";
+          frag.appendChild(mark);
+          lastIndex = end;
+        }
+        frag.appendChild(document.createTextNode(val.slice(lastIndex)));
+        node.parentNode.replaceChild(frag, node);
+      });
+    }
+  </script>
+</body>
+</html>
