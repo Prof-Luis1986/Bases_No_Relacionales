@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Firestore NoSQL — Práctica 2 (Escuela por grupos)</title>
+  <style>
+    :root{
+      --bg:#0f1511;
+      --card:#15201a;
+      --text:#ecfff1;
+      --muted:#bfe7c8;
+      --line:rgba(255,255,255,.12);
+      --accent:#6de38f;
+      --accent2:#a5f3fc;
+      --warn:#ffd27a;
+      --ok:#9affb0;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --max: 1020px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, rgba(109,227,143,.20), transparent 60%),
+                  radial-gradient(900px 500px at 100% 0%, rgba(165,243,252,.15), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      line-height:1.45;
+    }
+    header{
+      position:sticky; top:0; z-index:50;
+      background: rgba(15,21,17,.78);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .wrap{max-width:var(--max); margin:0 auto; padding:16px}
+    .top{display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between}
+    .title h1{margin:0; font-size:18px}
+    .title .sub{opacity:.85; font-size:13px; color:var(--muted); margin-top:2px}
+    nav{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+    .chip{
+      padding:8px 10px; border:1px solid var(--line); border-radius:999px;
+      color:var(--text); background: rgba(255,255,255,.05);
+      font-size:13px; cursor:pointer; user-select:none; text-decoration:none;
+    }
+    .chip:hover{border-color:rgba(109,227,143,.55)}
+    main{padding:18px 0 40px}
+    .grid{display:grid; grid-template-columns: 1fr; gap:14px}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card .hd{
+      padding:16px 16px 10px; border-bottom:1px solid var(--line);
+      display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+    }
+    .card .hd h2{margin:0; font-size:16px}
+    .tag{
+      font-size:12px; padding:6px 8px; border-radius:999px;
+      border:1px solid var(--line); color:var(--muted); background: rgba(0,0,0,.12);
+      white-space:nowrap;
+    }
+    .card .bd{padding:14px 16px}
+    .note{
+      border-left: 3px solid var(--accent2);
+      background: rgba(165,243,252,.08);
+      padding:10px 12px; border-radius:12px; margin:10px 0;
+    }
+    .warn{border-left-color: var(--warn); background: rgba(255,210,122,.10)}
+    .ok{border-left-color: var(--ok); background: rgba(154,255,176,.08)}
+    h3{margin:14px 0 8px; font-size:14px}
+    ul{margin:8px 0 10px 18px}
+    li{margin:6px 0}
+    code{
+      background: rgba(0,0,0,.25);
+      border:1px solid var(--line);
+      padding:2px 6px;
+      border-radius:8px;
+    }
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border-radius:14px;
+      border:1px solid var(--line);
+      margin:10px 0;
+    }
+    th,td{
+      text-align:left;
+      padding:10px 10px;
+      border-bottom:1px solid var(--line);
+      vertical-align:top;
+      font-size:13px;
+    }
+    th{background: rgba(109,227,143,.10); font-weight:600}
+    tr:last-child td{border-bottom:0}
+    .pill{
+      display:inline-block;
+      padding:6px 9px;
+      border-radius:999px;
+      background: rgba(109,227,143,.12);
+      border:1px solid rgba(109,227,143,.30);
+      font-size:12px;
+      margin:4px 6px 0 0;
+    }
+    .checklist label{
+      display:flex; gap:10px; align-items:flex-start;
+      padding:10px 10px; border:1px solid var(--line);
+      border-radius:14px; margin:10px 0; background: rgba(255,255,255,.03);
+      cursor:pointer;
+    }
+    .checklist input{transform: translateY(2px)}
+    footer{opacity:.9; color:var(--muted); font-size:12px; padding:18px 0 30px; text-align:center}
+    @media print{
+      header{position:static; background:#fff; color:#000}
+      body{background:#fff; color:#000}
+      .card{box-shadow:none; background:#fff}
+      .chip{display:none !important}
+      .tag{border:1px solid #ccc; color:#333}
+      a{color:#000; text-decoration:underline}
+      code{background:#f3f3f3; border:1px solid #ddd}
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">
+        <h1>Práctica 2 — Base de datos escolar por grupos</h1>
+        <div class="sub">Firestore (sin código) • Colecciones 1A a 6A</div>
+      </div>
+      <nav>
+        <a class="chip" href="index.html">Volver a la guía</a>
+        <a class="chip" href="#objetivo">Objetivo</a>
+        <a class="chip" href="#estructura">Estructura</a>
+        <a class="chip" href="#pasos">Pasos</a>
+        <a class="chip" href="#evidencias">Evidencias</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="grid">
+
+    <article class="card" id="objetivo">
+      <div class="hd">
+        <h2>Objetivo y reglas</h2>
+        <div class="tag">Meta</div>
+      </div>
+      <div class="bd">
+        <div class="note">
+          Crear una base de datos de una escuela en Firestore usando <b>una colección por grupo</b>.
+        </div>
+        <div class="note warn">
+          <b>Sin código.</b> Todo se realiza desde Firebase Console.
+        </div>
+        <div>
+          <span class="pill">Colecciones</span>
+          <span class="pill">Documentos</span>
+          <span class="pill">Campos</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="estructura">
+      <div class="hd">
+        <h2>Estructura requerida</h2>
+        <div class="tag">Firestore</div>
+      </div>
+      <div class="bd">
+        <p>Crea estas colecciones (nombres exactos):</p>
+        <div class="note">
+          <code>1A</code> <code>2A</code> <code>3A</code> <code>4A</code> <code>5A</code> <code>6A</code>
+        </div>
+        <p>Cada colección representa un grupo. Dentro de cada una, crea <b>10 documentos</b> (alumnos).</p>
+        <h3>Campos sugeridos para cada alumno</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Tipo de dato</th>
+              <th>Ejemplo</th>
+              <th>Obligatorio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>nombre</code></td>
+              <td>String</td>
+              <td>"Ana Torres"</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td><code>matricula</code></td>
+              <td>String</td>
+              <td>"A23014"</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td><code>edad</code></td>
+              <td>Number</td>
+              <td>12</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td><code>promedio</code></td>
+              <td>Number</td>
+              <td>8.7</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td><code>tutor</code></td>
+              <td>String</td>
+              <td>"Rosa Méndez"</td>
+              <td>No</td>
+            </tr>
+            <tr>
+              <td><code>fechaAlta</code></td>
+              <td>Timestamp / Date</td>
+              <td>Seleccionar fecha</td>
+              <td>Sí</td>
+            </tr>
+            <tr>
+              <td><code>activo</code></td>
+              <td>Boolean</td>
+              <td>true</td>
+              <td>Sí</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note warn">
+          <b>Cuida los tipos:</b> no pongas <code>"true"</code> ni <code>"12"</code> como texto.
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="pasos">
+      <div class="hd">
+        <h2>Pasos de la práctica</h2>
+        <div class="tag">Checklist</div>
+      </div>
+      <div class="bd">
+        <ol>
+          <li>Entra a Firebase Console y abre Firestore Database.</li>
+          <li>Crea las 6 colecciones con los nombres exactos: <code>1A</code> a <code>6A</code>.</li>
+          <li>En cada colección, crea <b>10 documentos</b> con ID automático.</li>
+          <li>Agrega los campos sugeridos con sus tipos correctos.</li>
+          <li>Verifica que cada grupo tenga mínimo 2 alumnos.</li>
+        </ol>
+      </div>
+    </article>
+
+    <article class="card" id="evidencias">
+      <div class="hd">
+        <h2>Evidencias de entrega</h2>
+        <div class="tag">Entrega</div>
+      </div>
+      <div class="bd">
+        <div class="checklist">
+          <label><input type="checkbox"> Están creadas las 6 colecciones: 1A a 6A.</label>
+          <label><input type="checkbox"> Cada colección tiene 10 alumnos.</label>
+          <label><input type="checkbox"> Los campos y tipos son correctos.</label>
+          <label><input type="checkbox"> La fecha está en Timestamp/Date.</label>
+          <label><input type="checkbox"> Los campos numéricos son Number (no texto).</label>
+        </div>
+        <h3>Entregar</h3>
+        <ul>
+          <li>📸 Capturas de las 6 colecciones con sus documentos.</li>
+          <li>📸 Una captura de un alumno por cada grupo.</li>
+        </ul>
+      </div>
+    </article>
+
+  </section>
+
+  <footer>
+    Práctica 2 — Firestore (NoSQL) • Base de datos escolar por grupos
+  </footer>
+</main>
+</body>
+</html>
