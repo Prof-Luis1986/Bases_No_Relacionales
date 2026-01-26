@@ -62,6 +62,24 @@
     }
     .btn:hover{border-color:rgba(125,255,207,.55)}
     main{padding:18px 0 40px}
+    .layout{max-width:var(--max); margin:0 auto; padding:16px; display:grid; grid-template-columns: 220px 1fr; gap:16px}
+    .side{
+      position:sticky; top:78px; align-self:start;
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:12px;
+      box-shadow: var(--shadow);
+      height: fit-content;
+    }
+    .side h3{margin:4px 0 10px; font-size:13px}
+    .side a{
+      display:block; padding:8px 10px; border-radius:10px; text-decoration:none;
+      color:var(--text); border:1px solid transparent; font-size:13px;
+      background: rgba(255,255,255,.03); margin:6px 0;
+    }
+    .side a:hover{border-color:rgba(122,162,255,.55)}
+    .content{min-width:0}
     .grid{display:grid; grid-template-columns: 1fr; gap:14px}
     .card{
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
@@ -161,9 +179,14 @@
       body{background:#fff; color:#000}
       .card{box-shadow:none; background:#fff}
       .chip,.btn,.search{display:none !important}
+      .side{display:none !important}
       .tag{border:1px solid #ccc; color:#333}
       a{color:#000; text-decoration:underline}
       code{background:#f3f3f3; border:1px solid #ddd}
+    }
+    @media (max-width: 900px){
+      .layout{grid-template-columns: 1fr}
+      .side{position:static}
     }
   </style>
 </head>
@@ -181,6 +204,7 @@
         <a class="chip" href="#practicario">Practicario</a>
         <a class="chip" href="#evidencias">Evidencias</a>
         <a class="chip" href="practica-escuela.html">Práctica 2</a>
+        <a class="chip" href="practica-3.html">Práctica 3</a>
       </nav>
     </div>
     <div class="tools">
@@ -195,8 +219,19 @@
   </div>
 </header>
 
-<main class="wrap">
-  <section class="grid">
+<div class="layout">
+  <aside class="side">
+    <h3>Menú lateral</h3>
+    <a href="index.html">Práctica 1 — Guía general</a>
+    <a href="practica-escuela.html">Práctica 2 — Escuela por grupos</a>
+    <a href="practica-3.html">Práctica 3 — Visor de datos</a>
+    <a href="#guia">Guía</a>
+    <a href="#tablas">Tablas</a>
+    <a href="#practicario">Practicario</a>
+    <a href="#evidencias">Evidencias</a>
+  </aside>
+  <main class="content">
+    <section class="grid">
 
     <article class="card" id="inicio">
       <div class="hd">
@@ -581,7 +616,8 @@
   <footer>
     Material de consulta — Firestore (NoSQL) • Curso intersemestral
   </footer>
-</main>
+  </main>
+</div>
 
 <script>
   // Expandir/contraer

@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Firestore NoSQL — Práctica 3 (Visor de datos)</title>
+  <link rel="stylesheet" href="practica-3.css" />
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="title">
+        <h1>Práctica 3 — Visor de datos escolar</h1>
+        <div class="sub">Firestore (con código) • HTML + CSS + JS</div>
+      </div>
+      <nav>
+        <a class="chip" href="index.html">Volver a la guía</a>
+        <a class="chip" href="practica-escuela.html">Práctica 2</a>
+        <a class="chip" href="practica-3.html">Práctica 3</a>
+        <a class="chip" href="#objetivo">Objetivo</a>
+        <a class="chip" href="#requisitos">Requisitos</a>
+        <a class="chip" href="#registro">Registrar app</a>
+        <a class="chip" href="#pasos">Pasos</a>
+        <a class="chip" href="#codigo">Código</a>
+        <a class="chip" href="#visor">Visor</a>
+        <a class="chip" href="#evidencias">Evidencias</a>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="side">
+    <h3>Menú lateral</h3>
+    <a href="index.html">Práctica 1 — Guía general</a>
+    <a href="practica-escuela.html">Práctica 2 — Escuela por grupos</a>
+    <a href="practica-3.html">Práctica 3 — Visor de datos</a>
+    <a href="#objetivo">Objetivo</a>
+    <a href="#requisitos">Requisitos</a>
+    <a href="#registro">Registrar app</a>
+    <a href="#pasos">Pasos</a>
+    <a href="#codigo">Código</a>
+    <a href="#visor">Visor</a>
+    <a href="#evidencias">Evidencias</a>
+  </aside>
+  <main class="content">
+    <section class="grid">
+
+    <article class="card span-2" id="objetivo">
+      <div class="hd">
+        <h2>Objetivo y reglas</h2>
+        <div class="tag">Meta</div>
+      </div>
+      <div class="bd">
+        <div class="note">
+          Crear un <b>visor web</b> que lea los alumnos de Firestore y los muestre en una tabla.
+        </div>
+        <div class="note warn">
+          Esta práctica <b>sí requiere código</b> en HTML, CSS y JavaScript.
+        </div>
+        <div>
+          <span class="pill">Firebase Web App</span>
+          <span class="pill">Firestore</span>
+          <span class="pill">SDK JS</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="requisitos">
+      <div class="hd">
+        <h2>Requisitos previos</h2>
+        <div class="tag">Antes</div>
+      </div>
+      <div class="bd">
+        <div class="note">
+          Ya deben existir las colecciones de la práctica 2: <code>1A</code> a <code>6A</code> con alumnos.
+        </div>
+        <h3>Campos mínimos esperados</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Campo</th>
+              <th>Tipo</th>
+              <th>Uso en visor</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>nombre</code></td>
+              <td>String</td>
+              <td>Nombre del alumno</td>
+            </tr>
+            <tr>
+              <td><code>matricula</code></td>
+              <td>String</td>
+              <td>Identificador único</td>
+            </tr>
+            <tr>
+              <td><code>edad</code></td>
+              <td>Number</td>
+              <td>Edad</td>
+            </tr>
+            <tr>
+              <td><code>promedio</code></td>
+              <td>Number</td>
+              <td>Promedio</td>
+            </tr>
+            <tr>
+              <td><code>activo</code></td>
+              <td>Boolean</td>
+              <td>Estado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </article>
+
+    <article class="card" id="registro">
+      <div class="hd">
+        <h2>Registrar la app web (Firebase)</h2>
+        <div class="tag">SDK</div>
+      </div>
+      <div class="bd">
+        <div class="note">
+          En la consola de Firebase, crea una <b>app web</b> y copia el bloque del SDK (como en la imagen).
+        </div>
+        <ol>
+          <li>Abre tu proyecto en Firebase Console.</li>
+          <li>Da clic en <b>Agregar app</b> y elige el icono de web <code>&lt;/&gt;</code>.</li>
+          <li>Registra la app con un nombre (ej. <code>visor-escuela</code>).</li>
+          <li>En la pantalla “Agrega el SDK de Firebase”, elige <b>Usar una etiqueta &lt;script&gt;</b>.</li>
+          <li>Copia el bloque de configuración (<code>firebaseConfig</code>).</li>
+        </ol>
+        <div class="note warn">
+          Esa configuración es única de tu proyecto. Debes pegarla en el código que aparece abajo.
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="pasos">
+      <div class="hd">
+        <h2>Pasos de la práctica 3</h2>
+        <div class="tag">Checklist</div>
+      </div>
+      <div class="bd">
+        <ol>
+          <li>Crea el archivo <code>practica-3.html</code> y enlaza <code>practica-3.css</code> y <code>practica-3.js</code>.</li>
+          <li>Pega el HTML base y el CSS del ejemplo.</li>
+          <li>Agrega el SDK de Firebase en el archivo <code>practica-3.js</code>.</li>
+          <li>Reemplaza el objeto <code>firebaseConfig</code> con el de tu proyecto.</li>
+          <li>Prueba el visor seleccionando un grupo (1A a 6A).</li>
+        </ol>
+        <div class="note ok">
+          Si el visor no muestra datos, revisa: nombre exacto de la colección, conexión a Internet y permisos de Firestore.
+        </div>
+      </div>
+    </article>
+
+    <article class="card span-2" id="codigo">
+      <div class="hd">
+        <h2>Código base (HTML + CSS + JS)</h2>
+        <div class="tag">Pegar</div>
+      </div>
+      <div class="bd">
+        <p>Este es un <b>ejemplo</b> con archivos separados. Sustituye los textos en <span class="replace">amarillo</span> por los datos reales de tu proyecto:</p>
+        <div class="code-head">
+          <h3>1) HTML (practica-3.html)</h3>
+          <button class="copy-btn" data-copy="html">Copiar HTML</button>
+        </div>
+        <pre><code>&lt;!doctype html&gt;
+&lt;html lang="es-MX"&gt;
+&lt;head&gt;
+  &lt;meta charset="utf-8" /&gt;
+  &lt;meta name="viewport" content="width=device-width,initial-scale=1" /&gt;
+  &lt;title&gt;Visor de alumnos&lt;/title&gt;
+  &lt;link rel="stylesheet" href="practica-3.css" /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;main class="wrap"&gt;
+    &lt;section class="viewer"&gt;
+      &lt;div class="row"&gt;
+        &lt;h2 style="margin:0 12px 0 0"&gt;Visor de alumnos&lt;/h2&gt;
+        &lt;label class="muted"&gt;Grupo:&lt;/label&gt;
+        &lt;select id="grupo"&gt;
+          &lt;option value="1A"&gt;1A&lt;/option&gt;
+          &lt;option value="2A"&gt;2A&lt;/option&gt;
+          &lt;option value="3A"&gt;3A&lt;/option&gt;
+          &lt;option value="4A"&gt;4A&lt;/option&gt;
+          &lt;option value="5A"&gt;5A&lt;/option&gt;
+          &lt;option value="6A"&gt;6A&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;button id="cargar"&gt;Cargar&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div id="estado" class="muted" style="margin-top:10px"&gt;Selecciona un grupo.&lt;/div&gt;
+      &lt;table&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th&gt;Matrícula&lt;/th&gt;
+            &lt;th&gt;Nombre&lt;/th&gt;
+            &lt;th&gt;Edad&lt;/th&gt;
+            &lt;th&gt;Promedio&lt;/th&gt;
+            &lt;th&gt;Activo&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody id="tabla"&gt;&lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/section&gt;
+  &lt;/main&gt;
+
+  &lt;script type="module" src="practica-3.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+        <div class="code-head">
+          <h3>2) CSS (practica-3.css)</h3>
+          <button class="copy-btn" data-copy="css">Copiar CSS</button>
+        </div>
+        <pre><code>body{
+  font-family:system-ui, Arial, sans-serif;
+  margin:0;
+  background:#0f1511;
+  color:#ecfff1;
+}
+.wrap{
+  max-width:960px;
+  margin:0 auto;
+  padding:20px;
+}
+.viewer{
+  background:#15201a;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  padding:16px;
+}
+.row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+select,button{
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#0f1511;
+  color:#ecfff1;
+}
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:12px;
+}
+th,td{
+  border-bottom:1px solid rgba(255,255,255,.12);
+  padding:8px;
+  text-align:left;
+  font-size:14px;
+}
+th{background:rgba(109,227,143,.10)}
+.muted{opacity:.75}</code></pre>
+
+        <div class="code-head">
+          <h3>3) JS (practica-3.js)</h3>
+          <button class="copy-btn" data-copy="js">Copiar JS</button>
+        </div>
+        <pre><code>import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "<span class="replace">TU_API_KEY</span>",
+  authDomain: "<span class="replace">TU_PROYECTO</span>.firebaseapp.com",
+  projectId: "<span class="replace">TU_PROYECTO</span>",
+  storageBucket: "<span class="replace">TU_PROYECTO</span>.appspot.com",
+  messagingSenderId: "<span class="replace">000000000000</span>",
+  appId: "1:<span class="replace">000000000000</span>:web:<span class="replace">xxxxxxxxxxxx</span>"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const grupo = document.getElementById("grupo");
+const btn = document.getElementById("cargar");
+const tabla = document.getElementById("tabla");
+const estado = document.getElementById("estado");
+
+async function cargarGrupo(){
+  const nombreColeccion = grupo.value;
+  estado.textContent = "Cargando datos de " + nombreColeccion + "...";
+  tabla.innerHTML = "";
+
+  try{
+    const snap = await getDocs(collection(db, nombreColeccion));
+    if (snap.empty){
+      estado.textContent = "No hay alumnos en " + nombreColeccion + ".";
+      return;
+    }
+    snap.forEach(doc =&gt; {
+      const d = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        &lt;td&gt;${d.matricula ?? "-"}&lt;/td&gt;
+        &lt;td&gt;${d.nombre ?? "-"}&lt;/td&gt;
+        &lt;td&gt;${d.edad ?? "-"}&lt;/td&gt;
+        &lt;td&gt;${d.promedio ?? "-"}&lt;/td&gt;
+        &lt;td&gt;${d.activo ? "Sí" : "No"}&lt;/td&gt;
+      `;
+      tabla.appendChild(tr);
+    });
+    estado.textContent = "Mostrando " + snap.size + " alumnos de " + nombreColeccion + ".";
+  }catch(err){
+    console.error(err);
+    estado.textContent = "Error al leer datos. Revisa permisos y configuración.";
+  }
+}
+
+btn.addEventListener("click", cargarGrupo);</code></pre>
+        <div class="note">
+          El visor real está abajo. Solo debes editar <code>practica-3.js</code> y el CSS si deseas cambiar el diseño.
+        </div>
+      </div>
+    </article>
+
+    <article class="card span-2" id="visor">
+      <div class="hd">
+        <h2>Visor de alumnos</h2>
+        <div class="tag">Demo</div>
+      </div>
+      <div class="bd">
+        <div class="viewer">
+          <div class="row">
+            <h2 style="margin:0 12px 0 0">Visor de alumnos</h2>
+            <label class="muted">Grupo:</label>
+            <select id="grupo">
+              <option value="1A">1A</option>
+              <option value="2A">2A</option>
+              <option value="3A">3A</option>
+              <option value="4A">4A</option>
+              <option value="5A">5A</option>
+              <option value="6A">6A</option>
+            </select>
+            <button id="cargar">Cargar</button>
+          </div>
+          <div id="estado" class="muted" style="margin-top:10px">Selecciona un grupo.</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Matrícula</th>
+                <th>Nombre</th>
+                <th>Edad</th>
+                <th>Promedio</th>
+                <th>Activo</th>
+              </tr>
+            </thead>
+            <tbody id="tabla"></tbody>
+          </table>
+        </div>
+      </div>
+    </article>
+
+    <article class="card" id="evidencias">
+      <div class="hd">
+        <h2>Evidencias de entrega</h2>
+        <div class="tag">Entrega</div>
+      </div>
+      <div class="bd">
+        <div class="checklist">
+          <label><input type="checkbox"> El visor carga datos de <code>1A</code> a <code>6A</code>.</label>
+          <label><input type="checkbox"> Se ve la tabla con matrícula, nombre, edad, promedio y activo.</label>
+          <label><input type="checkbox"> El SDK de Firebase está pegado en <code>practica-3.js</code>.</label>
+          <label><input type="checkbox"> La configuración <code>firebaseConfig</code> es real del proyecto.</label>
+        </div>
+        <h3>Entregar</h3>
+        <ul>
+          <li>📸 Captura del visor mostrando datos de un grupo (ej. 3A).</li>
+          <li>📸 Captura del código donde se ve el <code>firebaseConfig</code> (sin ocultar).</li>
+        </ul>
+      </div>
+    </article>
+
+    </section>
+
+    <footer>
+      Práctica 3 — Firestore (NoSQL) • Visor web de datos
+    </footer>
+  </main>
+</div>
+<script type="module" src="practica-3.js"></script>
+<script>
+  const blocks = {
+    html: document.querySelectorAll("article#codigo pre code")[0],
+    css: document.querySelectorAll("article#codigo pre code")[1],
+    js: document.querySelectorAll("article#codigo pre code")[2]
+  };
+  document.querySelectorAll(".copy-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const key = btn.getAttribute("data-copy");
+      const code = blocks[key]?.textContent || "";
+      if(!code) return;
+      try{
+        await navigator.clipboard.writeText(code);
+        const prev = btn.textContent;
+        btn.textContent = "Copiado";
+        setTimeout(() => btn.textContent = prev, 1200);
+      }catch{
+        const prev = btn.textContent;
+        btn.textContent = "No se pudo copiar";
+        setTimeout(() => btn.textContent = prev, 1400);
+      }
+    });
+  });
+</script>
+</body>
+</html>
