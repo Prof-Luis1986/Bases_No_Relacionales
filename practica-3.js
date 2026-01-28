@@ -13,15 +13,31 @@ const firebaseConfig = {
   appId: "1:000000000000:web:xxxxxxxxxxxx" // <- reemplazar
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 const grupo = document.getElementById("grupo");
 const btn = document.getElementById("cargar");
 const tabla = document.getElementById("tabla");
 const estado = document.getElementById("estado");
 
+const placeholderTokens = ["TU_", "000000", "xxxxxxxxxxxx"];
+const configIncompleta = Object.values(firebaseConfig).some((v) => {
+  if (typeof v !== "string") return false;
+  return placeholderTokens.some((token) => v.includes(token));
+});
+
+let db = null;
+if (configIncompleta){
+  estado.textContent = "Config de Firebase incompleta: reemplaza TODO en firebaseConfig.";
+  btn.disabled = true;
+}else{
+  const app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+}
+
 async function cargarGrupo(){
+  if (!db){
+    estado.textContent = "No hay conexión: verifica firebaseConfig antes de cargar.";
+    return;
+  }
   const nombreColeccion = grupo.value;
   estado.textContent = "Cargando datos de " + nombreColeccion + "...";
   tabla.innerHTML = "";
